@@ -5,17 +5,17 @@
 @section('content')
     <div class="container mt-5">
         <div class="row">
-            <div class="col-md-8 col-lg-8 offset-lg-2 offset-md-2">
-                <div class="card text-center">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="card-title">
-                            WE ARE STILL PROCESSING LOANS! <br/>
-                            FIND OUT HOW MUCH YOU QUALIFY FOR!
-                        </h4>
+            <div class="col-md-7 col-lg-7 offset-lg-3 offset-md-3">
+                <div class="card text-center" id="main">
+                    <div class="card-header bg-custom-primary text-white pt-0">
+                        <div class="card-title">
+                            <p class="m-0">WE ARE STILL PROCESSING LOANS! </p>
+                            <p class="m-0">FIND OUT HOW MUCH YOU QUALIFY FOR!</p>
+                        </div>
                     </div>
 
-                    <div class="card-body mx-5">
-                        <p class="fs-1">
+                    <div class="card-body mx-5 mt-3 px-0">
+                        <p class="fs-35px open-sans">
                             Take Advantage of Today's Historically Low Rates & Pay <u>LESS</u> Interest
                         </p>
                         <p class="text-primary fs-4">WITH THE 5% FIRST HOME LOAN DEPOSIT SCHEME</p>
@@ -24,8 +24,8 @@
                         </p>
 
                         <div class="row my-5">
-                            <div class="col-md-8 col-lg-8 offset-lg-2 offset-md-2">
-                                <div class="card text-start">
+                            <div class="col-md-9 col-lg-9 offset-lg-1 offset-md-1">
+                                <div class="card text-start py-4 px-2">
                                     <div class="card-body">
                                         <form id="rate_form" action="">
                                             <div class="row">
@@ -220,7 +220,7 @@
 
                     <div class="card-footer text-end">
                         <div class="btn-group">
-                            <button data-step="0" class="btn btn-primary btn-sm d-none" id="prev-question">Prev <i class="fa fa-angle-double-right"></i></button>
+                            <button data-step="0" class="btn btn-primary btn-sm d-none" id="prev-question"><i class="fa fa-angle-double-left"></i> Prev</button>
                             <button data-step="1" class="btn btn-primary btn-sm" id="next-question">Next <i class="fa fa-angle-double-right"></i></button>
                             <button class="btn btn-info btn-sm d-none text-white" id="verify-mobile">Verify Mobile <i class="fa fa-mobile-alt"></i></button>
                         </div>
@@ -248,19 +248,53 @@
                                         </h3>
                                     </div>
                                 </div>`;
-        var input = document.querySelector("#mobile");
-        const tel_input = window.intlTelInput(input, {
-            initialCountry: "auto",
-            geoIpLookup: function(callback) {
-                $.get('https://ipinfo.io', function() {}, "jsonp").always(function(resp) {
-                var countryCode = (resp && resp.country) ? resp.country : "";
-                callback(countryCode);
-                });
-            }
-        });
+        // var input = document.querySelector("#mobile");
+        // const tel_input = window.intlTelInput(input, {
+        //     initialCountry: "auto",
+        //     geoIpLookup: function(callback) {
+        //         $.get('https://ipinfo.io', function() {}, "jsonp").always(function(resp) {
+        //         var countryCode = (resp && resp.country) ? resp.country : "";
+        //         callback(countryCode);
+        //         });
+        //     }
+        // });
         $(document).ready(() => {
             $('select').select2({
                 theme: 'bootstrap-5'
+            });
+
+            $('#prev-question').on('click', function(e) {
+                e.preventDefault();
+
+                const _form = $('#rate_form');
+                var prev_step = current_step = -1;
+                const rows = _form.find('.row');
+                const total_steps = rows.length;
+
+                $.each(rows, function(index, row) {
+
+                    if($(row).is(':visible')){
+
+                        current_step = index;
+                        prev_step = index-1;
+                    }
+                });
+
+                const current_row = _form.find(`.row:nth(${current_step})`);
+                //we're on the last step already
+                if(prev_step <= 0){
+                    
+                    $('#verify-mobile').addClass('d-none');
+                    $('#prev-question').addClass('d-none');
+
+                    current_row.addClass('d-none');
+                    _form.find(`.row:nth(${prev_step})`).removeClass('d-none');
+
+                    return;
+                }
+
+                current_row.addClass('d-none');
+                _form.find(`.row:nth(${prev_step})`).removeClass('d-none');
             });
 
             $('#next-question').on('click', function (e) {
@@ -280,6 +314,13 @@
                     }
                 });
 
+                if(next_step > 0){
+
+                    $('#prev-question').removeClass('d-none');
+                } else {
+
+                    $('#prev-question').addClass('d-none');
+                }
                 //we're on the last step already
                 if(current_step == total_steps-1){
                     
@@ -311,7 +352,6 @@
                 }
 
                 current_row.addClass('d-none');
-                console.log(_form.find(`.row:nth(${next_step})`));
                 _form.find(`.row:nth(${next_step})`).removeClass('d-none');
             });
 
@@ -338,7 +378,8 @@
                     },
                     method: 'POST',
                     body: JSON.stringify({
-                        mobile: "+"+tel_input.getSelectedCountryData().dialCode + mobile
+                        mobile: mobile
+                        //mobile: "+"+tel_input.getSelectedCountryData().dialCode + mobile
                     })
                 }).then(response => response.json())
                 .then( async (data) => {
@@ -392,16 +433,14 @@
                                                 headers.append("Content-Type", "application/json")
 
                                                 const body = Object.fromEntries(form_data);
-
                                                 const options = {
-                                                method: "POST",
-                                                headers,
-                                                mode: "cors",
-                                                body: JSON.stringify(body),
+                                                    method: "POST",
+                                                    headers,
+                                                    mode: "cors",
+                                                    body: JSON.stringify(body),
                                                 }
 
-                                                fetch("https://ena0na86dypqdxd.m.pipedream.net", options);
-
+                                                fetch("{{ env('POST_API') }}", options);
                                                 $('#rate_form').html(final_message);
                                             } else {
 

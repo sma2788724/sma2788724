@@ -12,9 +12,26 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.12/css/intlTelInput.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto:400,700|Open Sans:400,700|Abel:400,700|Raleway:400,700|Oxygen:400,700|" rel="stylesheet">
     
     <title>@yield('title')</title>
     <style>
+        #main .card-header p {
+          font-family: Abel;
+        }
+
+        .open-sans {
+          font-family: 'Open Sans' !important;
+        }
+        .fs-35px{
+          font-size: 35px !important;
+        }
+        p {
+          font-size: 28px !important;
+          line-height: 1.3em !important;
+        }
         #cover {
             background-size: 100% auto !important;
             -webkit-background-size: 100% auto !important;
@@ -32,6 +49,12 @@
         }
         .iti.iti--allow-dropdown{
           width: 100% !important;
+        }
+        .bg-custom-primary {
+          background-color: rgb(0, 117, 178)
+        }
+        #main {
+          border: 0;
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
